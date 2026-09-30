@@ -28,6 +28,7 @@
           <span class="sync-badge" id="syncBadge" style="display:none">0</span>
         </button>
         <button class="header-btn" id="historyBtn" title="History">📋</button>
+        <button class="header-btn" id="settingsBtn" title="Settings">⚙️</button>
       </div>
     </div>
     <div class="status-bar">
@@ -357,6 +358,37 @@
         <button class="modal-close" onclick="closeHistory()">✕</button>
       </div>
       <div class="modal-body" id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ═══ Settings Modal ═══ -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ सेटिंग्स / Settings</h2>
+        <button class="modal-close" onclick="closeSettings()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group">
+          <label class="field-label" for="settingsScriptUrl">
+            Google Sheets Web App URL:
+          </label>
+          <input type="text" id="settingsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+          <p style="font-size:0.75rem; color:#666; margin-top:6px;">
+            यह URL डेटा को सीधे Google Sheets में सिंक करने के लिए उपयोग किया जाता है।<br>
+            <em>(This URL connects your PWA directly to your Google Sheet.)</em>
+          </p>
+        </div>
+        <div id="settingsStatus" style="font-size:0.85rem; margin:12px 0; font-weight:600;"></div>
+        <div style="display:flex; gap:10px; margin-top:16px;">
+          <button type="button" class="submit-btn" id="saveSettingsBtn" style="min-height:44px; padding:10px;">
+            💾 सेव करें / Save URL
+          </button>
+          <button type="button" class="secondary-btn" id="testSettingsBtn">
+            🔍 टेस्ट / Test Connection
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

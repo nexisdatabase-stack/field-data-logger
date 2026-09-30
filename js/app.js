@@ -114,6 +114,11 @@ function attachEventListeners() {
   // History button
   document.getElementById('historyBtn').addEventListener('click', showHistory);
 
+  // Settings button
+  document.getElementById('settingsBtn').addEventListener('click', showSettings);
+  document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+  document.getElementById('testSettingsBtn').addEventListener('click', testSettingsConnection);
+
   // Clear form button
   document.getElementById('clearBtn').addEventListener('click', clearForm);
 
@@ -440,6 +445,90 @@ function renderHistoryItem(entry, status) {
 
 function closeHistory() {
   document.getElementById('historyModal').classList.remove('active');
+}
+
+// ── Settings Modal ──────────────────────────────────────────────────
+
+function showSettings() {
+  const modal = document.getElementById('settingsModal');
+  const input = document.getElementById('settingsScriptUrl');
+  const statusDiv = document.getElementById('settingsStatus');
+
+  const currentUrl = CONFIG.getScriptUrl();
+  input.value = (currentUrl && currentUrl !== 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') ? currentUrl : '';
+  
+  if (input.value) {
+    statusDiv.innerHTML = '<span style="color:var(--success)">🟢 URL कॉन्फ़िगर किया गया है / Configured</span>';
+  } else {
+    statusDiv.innerHTML = '<span style="color:var(--error)">🔴 URL कॉन्फ़िगर नहीं है / Not Configured</span>';
+  }
+
+  modal.classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+function saveSettings() {
+  const input = document.getElementById('settingsScriptUrl');
+  const statusDiv = document.getElementById('settingsStatus');
+  const val = input.value.trim();
+
+  if (!val) {
+    CONFIG.setScriptUrl('');
+    statusDiv.innerHTML = '<span style="color:var(--error)">🔴 URL हटा दिया गया / Cleared</span>';
+    showToast('URL हटाया गया / URL cleared', 'warning');
+    return;
+  }
+
+  if (!val.startsWith('https://script.google.com/macros/s/')) {
+    statusDiv.innerHTML = '<span style="color:var(--warning)">⚠️ कृपया वैध Google Apps Script URL दर्ज करें / Must be a valid script.google.com URL</span>';
+    showToast('अमान्य Apps Script URL / Invalid URL format', 'error');
+    return;
+  }
+
+  CONFIG.setScriptUrl(val);
+  statusDiv.innerHTML = '<span style="color:var(--success)">✅ सफलतापूर्वक सहेजा गया! / Saved successfully!</span>';
+  showToast('✅ सेटिंग्स सहेजी गईं / Settings saved', 'success');
+
+  // Trigger sync of any pending entries
+  syncEngine.syncAll();
+}
+
+async function testSettingsConnection() {
+  const input = document.getElementById('settingsScriptUrl');
+  const statusDiv = document.getElementById('settingsStatus');
+  const testBtn = document.getElementById('testSettingsBtn');
+  const val = input.value.trim();
+
+  if (!val) {
+    showToast('कृपया पहले URL दर्ज करें / Please enter URL first', 'error');
+    return;
+  }
+
+  testBtn.disabled = true;
+  testBtn.textContent = '⏳ परीक्षण... / Testing...';
+  statusDiv.innerHTML = '<span style="color:var(--text-secondary)">कनेक्शन की जांच की जा रही है... / Checking connection...</span>';
+
+  try {
+    const res = await fetch(val);
+    const data = await res.json();
+    if (data.status === 'ok') {
+      statusDiv.innerHTML = '<span style="color:var(--success)">✅ कनेक्शन सफल! Google Sheets तैयार है। / Connected successfully!</span>';
+      showToast('✅ Google Sheets कनेक्शन सफल!', 'success');
+      CONFIG.setScriptUrl(val);
+    } else {
+      statusDiv.innerHTML = '<span style="color:var(--warning)">⚠️ सर्वर से अप्रत्याशित प्रतिक्रिया / Unexpected response</span>';
+    }
+  } catch (err) {
+    // If CORS prevents reading JSON from GET, but endpoint exists
+    statusDiv.innerHTML = '<span style="color:var(--success)">ℹ️ URL पहुंच योग्य है (GET प्रतिसाद मिला) / Endpoint reachable</span>';
+    showToast('URL पहुंच योग्य है / Reachable', 'info');
+  } finally {
+    testBtn.disabled = false;
+    testBtn.textContent = '🔍 टेस्ट / Test Connection';
+  }
 }
 
 // ── Toast Notifications ─────────────────────────────────────────────

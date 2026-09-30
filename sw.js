@@ -5,7 +5,7 @@
  * and network-first for API calls.
  */
 
-const CACHE_NAME = 'field-data-logger-v2';
+const CACHE_NAME = 'field-data-logger-v3';
 const APP_SHELL = [
   './',
   './index.html',

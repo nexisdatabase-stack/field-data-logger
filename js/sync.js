@@ -59,8 +59,9 @@ class SyncEngine {
     if (this.isSyncing) return;
     if (!navigator.onLine) return;
 
-    if (CONFIG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') {
-      this.notifyListeners('error', { message: 'Apps Script URL not configured. See js/config.js' });
+    const scriptUrl = CONFIG.getScriptUrl();
+    if (!scriptUrl || scriptUrl === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      this.notifyListeners('error', { message: 'Apps Script URL not configured. Tap ⚙️ to set it.' });
       return;
     }
 
@@ -127,7 +128,8 @@ class SyncEngine {
         ...e.data
       }));
 
-      const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      const scriptUrl = CONFIG.getScriptUrl();
+      const response = await fetch(scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
@@ -163,11 +165,12 @@ class SyncEngine {
    */
   async getStatus() {
     const pendingCount = await this.db.getPendingCount();
+    const url = CONFIG.getScriptUrl();
     return {
       isOnline: navigator.onLine,
       isSyncing: this.isSyncing,
       pendingCount,
-      isConfigured: CONFIG.APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
+      isConfigured: !!url && url !== 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
     };
   }
 

@@ -6,8 +6,28 @@
  */
 
 const CONFIG = {
-  // Google Apps Script Web App URL — PASTE YOUR URL HERE
+  // Google Apps Script Web App URL — default or fallback
   APPS_SCRIPT_URL: 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
+
+  /**
+   * Returns configured Apps Script URL (prefers localStorage if set)
+   */
+  getScriptUrl() {
+    const local = localStorage.getItem('field_logger_script_url');
+    if (local && local.trim()) return local.trim();
+    return this.APPS_SCRIPT_URL;
+  },
+
+  /**
+   * Save Apps Script URL in localStorage
+   */
+  setScriptUrl(url) {
+    if (url && url.trim()) {
+      localStorage.setItem('field_logger_script_url', url.trim());
+    } else {
+      localStorage.removeItem('field_logger_script_url');
+    }
+  },
 
   // Google Sheet ID (for reference)
   SHEET_ID: '1ZexGXO6uKaMKoR5fR7WKFCQzJHcK8iBr-clXBTE4228',
