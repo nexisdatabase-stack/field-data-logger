@@ -1,0 +1,591 @@
+/**
+ * SATHI PWA — Styles
+ * Mobile-first, agricultural-themed design
+ */
+
+/* ── CSS Variables ──────────────────────────────────────────────── */
+:root {
+  --primary: #2E7D32;
+  --primary-dark: #1B5E20;
+  --primary-light: #4CAF50;
+  --accent: #FF8F00;
+  --bg: #F1F8E9;
+  --surface: #FFFFFF;
+  --text: #1B1B1B;
+  --text-secondary: #555;
+  --border: #C8E6C9;
+  --error: #D32F2F;
+  --success: #2E7D32;
+  --warning: #F57F17;
+
+  /* Section colors */
+  --sec1: #1565C0;  /* Metadata - Blue */
+  --sec2: #6D4C41;  /* Soil - Brown */
+  --sec3: #00838F;  /* Psychrometer - Teal */
+  --sec4: #AD1457;  /* IR Thermometer - Pink */
+  --sec5: #6A1B9A;  /* Calculated - Purple */
+  --sec6: #37474F;  /* Notes - Dark Grey */
+  --sec7: #0277BD;  /* Atmospheric - Light Blue */
+}
+
+/* ── Reset & Base ───────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: white;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.header-btn:active {
+  background: rgba(255,255,255,0.3);
+}
+
+.header-btn.syncing {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.sync-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: rgba(0,0,0,0.15);
+  font-size: 0.7rem;
+  margin: 0 -16px -12px;
+}
+
+.status-online { color: #A5D6A7; }
+.status-offline { color: #EF9A9A; }
+
+/* ── Main Content ───────────────────────────────────────────────── */
+.app-main {
+  padding: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── GPS Bar ────────────────────────────────────────────────────── */
+.gps-bar {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.gps-bar button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 44px;
+}
+
+.gps-bar button:disabled {
+  opacity: 0.6;
+}
+
+.gps-display {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex: 1;
+  word-break: break-all;
+}
+
+.gps-display.gps-success {
+  color: var(--success);
+}
+
+.gps-display.gps-error {
+  color: var(--error);
+}
+
+/* ── Form Sections ──────────────────────────────────────────────── */
+.form-section {
+  background: var(--surface);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.section-header {
+  padding: 12px 16px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  min-height: 44px;
+}
+
+.section-header::after {
+  content: '▼';
+  font-size: 0.65rem;
+  transition: transform 0.3s;
+}
+
+.collapsed .section-header::after {
+  transform: rotate(-90deg);
+}
+
+.section-body {
+  padding: 12px 16px 16px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+}
+
+.collapsed .section-body {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Section colors */
+.sec-metadata .section-header { background: var(--sec1); }
+.sec-soil .section-header { background: var(--sec2); }
+.sec-psychrometer .section-header { background: var(--sec3); }
+.sec-ir .section-header { background: var(--sec4); }
+.sec-calculated .section-header { background: var(--sec5); }
+.sec-notes .section-header { background: var(--sec6); }
+.sec-atmospheric .section-header { background: var(--sec7); }
+
+/* ── Form Fields ────────────────────────────────────────────────── */
+.field-group {
+  margin-bottom: 12px;
+}
+
+.field-group:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.field-label .required {
+  color: var(--error);
+}
+
+.field-label .unit {
+  font-weight: 400;
+  color: #888;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #FAFFFE;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 44px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+}
+
+input[readonly] {
+  background: #E8F5E9;
+  border-style: dashed;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+input::placeholder {
+  color: #AAA;
+  font-size: 0.85rem;
+}
+
+/* ── Submit Button ──────────────────────────────────────────────── */
+.submit-section {
+  padding: 16px 12px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 52px;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.secondary-btn:active {
+  background: #F0F0F0;
+}
+
+/* ── Toast Notifications ────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast {
+  background: #333;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: auto;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-success { background: var(--success); }
+.toast-error { background: var(--error); }
+.toast-warning { background: var(--warning); }
+
+/* ── History Modal ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--surface);
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modal-close:active {
+  background: #F0F0F0;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 16px;
+  flex: 1;
+}
+
+.history-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.history-pending {
+  border-left: 3px solid var(--warning);
+}
+
+.history-synced {
+  border-left: 3px solid var(--success);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.history-time {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.history-details {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+  font-size: 0.9rem;
+}
+
+/* ── Utility ────────────────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (min-width: 480px) {
+  .app-main {
+    padding: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --surface: #1E1E1E;
+    --text: #E0E0E0;
+    --text-secondary: #AAA;
+    --border: #333;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    background: #2A2A2A;
+    color: #E0E0E0;
+    border-color: #444;
+  }
+
+  input[readonly] {
+    background: #1B3620;
+  }
+
+  .gps-bar,
+  .form-section {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .secondary-btn {
+    background: #2A2A2A;
+    color: #E0E0E0;
+    border-color: #444;
+  }
+
+  .secondary-btn:active {
+    background: #333;
+  }
+
+  .modal-close:active {
+    background: #333;
+  }
+}

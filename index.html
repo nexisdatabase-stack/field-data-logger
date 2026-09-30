@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="hi-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="description" content="Field Data Logger — CSA PAg Multi-Device Raw Parameter Logging">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Field Data Logger</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ═══ Header ═══ -->
+  <header class="app-header">
+    <div class="header-top">
+      <div>
+        <div class="app-title">📋 Field Data Logger</div>
+        <div class="app-subtitle">CSA PAg — Multi-Device Raw Parameter Logging</div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" id="syncBtn" title="Sync">
+          🔄
+          <span class="sync-badge" id="syncBadge" style="display:none">0</span>
+        </button>
+        <button class="header-btn" id="historyBtn" title="History">📋</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span id="onlineStatus" class="status-online">🟢 ऑनलाइन / Online</span>
+      <span style="opacity:0.7">v1.0</span>
+    </div>
+  </header>
+
+  <!-- ═══ Main Content ═══ -->
+  <main class="app-main">
+
+    <!-- GPS Bar -->
+    <div class="gps-bar">
+      <button id="captureGps" type="button">📍 स्थान प्राप्त करें / Capture GPS</button>
+      <div class="gps-display" id="gpsDisplay"></div>
+      <input type="hidden" id="gpsLat">
+      <input type="hidden" id="gpsLng">
+    </div>
+
+    <!-- ═══ Data Entry Form ═══ -->
+    <form id="dataForm" autocomplete="off">
+
+      <!-- ── Section 1: Observation Metadata ── -->
+      <div class="form-section sec-metadata">
+        <div class="section-header">
+          📋 अनुभाग 1: अवलोकन मेटाडेटा / Observation Metadata
+        </div>
+        <div class="section-body">
+          <div class="field-group">
+            <label class="field-label" for="date">
+              दिनांक / Date <span class="required">*</span>
+            </label>
+            <input type="date" id="date" required>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="timingWindow">
+              समय अंतराल / Timing Window <span class="required">*</span>
+            </label>
+            <select id="timingWindow" required>
+              <option value="">-- चुनें / Select --</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="plot">
+              प्लॉट ID / Plot ID <span class="required">*</span>
+            </label>
+            <input type="text" id="plot" list="plotList" required placeholder="e.g. P1, P2, P3...">
+            <datalist id="plotList"></datalist>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="plotType">
+              प्लॉट प्रकार / Plot Type <span class="required">*</span>
+            </label>
+            <input type="text" id="plotType" list="plotTypeList" required placeholder="e.g. Machan, Intercropping...">
+            <datalist id="plotTypeList"></datalist>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="cropType">
+              फसल का प्रकार / Crop Type <span class="required">*</span>
+            </label>
+            <input type="text" id="cropType" list="cropTypeList" required placeholder="फसल चुनें या टाइप करें / Select or type crop...">
+            <datalist id="cropTypeList"></datalist>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="cropGrowthStage">
+              फसल विकास चरण / Crop Growth Stage
+            </label>
+            <select id="cropGrowthStage">
+              <option value="">-- चुनें / Select --</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="replicate">
+              प्रतिकृति / Replicate <span class="required">*</span>
+            </label>
+            <select id="replicate" required>
+              <option value="">-- चुनें / Select --</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 2: 8-in-1 Soil Sensor ── -->
+      <div class="form-section sec-soil">
+        <div class="section-header">
+          🌍 अनुभाग 2: 8-in-1 मृदा सेंसर / Soil Sensor Core
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="vwc">
+                VWC <span class="unit">[%]</span>
+              </label>
+              <input type="number" id="vwc" step="0.1" min="0" max="100" placeholder="e.g. 22.5" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="soilTemp">
+                मृदा तापमान / Soil Temp <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="soilTemp" step="0.1" placeholder="e.g. 18.2" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="ec">
+                EC <span class="unit">[dS/m]</span>
+              </label>
+              <input type="number" id="ec" step="0.01" min="0" placeholder="e.g. 1.20" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="soilPh">
+                मृदा pH / Soil pH
+              </label>
+              <input type="number" id="soilPh" step="0.1" min="0" max="14" placeholder="e.g. 6.5" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="field-row-3">
+            <div class="field-group">
+              <label class="field-label" for="nitrogen">
+                N <span class="unit">[mg/kg]</span>
+              </label>
+              <input type="number" id="nitrogen" step="1" min="0" placeholder="120" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="phosphorus">
+                P <span class="unit">[mg/kg]</span>
+              </label>
+              <input type="number" id="phosphorus" step="1" min="0" placeholder="45" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="potassium">
+                K <span class="unit">[mg/kg]</span>
+              </label>
+              <input type="number" id="potassium" step="1" min="0" placeholder="210" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Digital Canopy Psychrometer (HTC HD-304) ── -->
+      <div class="form-section sec-psychrometer">
+        <div class="section-header">
+          🌡️ अनुभाग 3: डिजिटल कैनोपी साइक्रोमीटर / Psychrometer (HTC HD-304)
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="dryBulbTemp">
+                शुष्क-बल्ब तापमान / Dry-Bulb <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="dryBulbTemp" step="0.1" placeholder="e.g. 20.5" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="rh">
+                सापेक्ष आर्द्रता / RH <span class="unit">[%]</span>
+              </label>
+              <input type="number" id="rh" step="0.1" min="0" max="100" placeholder="e.g. 65" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="wetBulbTemp">
+                आर्द्र-बल्ब तापमान / Wet-Bulb <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="wetBulbTemp" step="0.1" placeholder="e.g. 16.0" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="dewPointTemp">
+                ओस बिंदु / Dew Point <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="dewPointTemp" step="0.1" placeholder="e.g. 13.5" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 4: Handheld IR Thermometer (HTC MTX-1) ── -->
+      <div class="form-section sec-ir">
+        <div class="section-header">
+          🔥 अनुभाग 4: हैंडहेल्ड IR थर्मामीटर / IR Thermometer (HTC MTX-1)
+        </div>
+        <div class="section-body">
+          <div class="field-row-3">
+            <div class="field-group">
+              <label class="field-label" for="leafSpot1">
+                पत्ती 1 / Leaf 1 <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="leafSpot1" step="0.1" placeholder="19.2" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="leafSpot2">
+                पत्ती 2 / Leaf 2 <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="leafSpot2" step="0.1" placeholder="18.8" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="leafSpot3">
+                पत्ती 3 / Leaf 3 <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="leafSpot3" step="0.1" placeholder="19.0" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="canopyTemp">
+              कैनोपी तापमान / Canopy Temp <span class="unit">[°C]</span>
+              <em style="font-weight:400; color:#888">(auto-calculated)</em>
+            </label>
+            <input type="number" id="canopyTemp" step="0.1" readonly placeholder="Auto">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 5: Auto-calculated Biophysical Indicators ── -->
+      <div class="form-section sec-calculated">
+        <div class="section-header">
+          🧮 अनुभाग 5: स्वचालित जैव-भौतिक संकेतक / Calculated Indicators
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="canopyStressDelta">
+                कैनोपी तनाव ΔT <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="canopyStressDelta" step="0.1" readonly placeholder="Auto">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="wetBulbDepression">
+                Wet-Bulb Depression <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="wetBulbDepression" step="0.1" readonly placeholder="Auto">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="dewPointSpread">
+                Dew Point Spread <span class="unit">[°C]</span>
+              </label>
+              <input type="number" id="dewPointSpread" step="0.1" readonly placeholder="Auto">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="vpd">
+                VPD <span class="unit">[kPa]</span>
+              </label>
+              <input type="number" id="vpd" step="0.01" readonly placeholder="Auto">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 6: Field Notes / Operator ── -->
+      <div class="form-section sec-notes">
+        <div class="section-header">
+          📝 अनुभाग 6: फ़ील्ड नोट्स / Field Notes & Operator
+        </div>
+        <div class="section-body">
+          <div class="field-group">
+            <label class="field-label" for="observerName">
+              फ़ील्ड पर्यवेक्षक / Field Observer Name
+            </label>
+            <input type="text" id="observerName" placeholder="नाम दर्ज करें / Enter name">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="fieldNotes">
+              फ़ील्ड नोट्स / Field Notes / Actions Taken
+            </label>
+            <textarea id="fieldNotes" placeholder="अवलोकन या की गई कार्रवाई लिखें / Write observations or actions taken..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 7: Manual Atmospheric Readings ── -->
+      <div class="form-section sec-atmospheric">
+        <div class="section-header">
+          💨 अनुभाग 7: मैन्युअल वायुमंडलीय / Manual Atmospheric Readings
+        </div>
+        <div class="section-body">
+          <div class="field-group">
+            <label class="field-label" for="windSpeed">
+              वायु गति (बोफ़ोर्ट) / Wind Speed (Beaufort Scale)
+            </label>
+            <select id="windSpeed">
+              <option value="">-- चुनें / Select --</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="barometricPressure">
+              वायुमंडलीय दबाव / Barometric Pressure <span class="unit">[hPa]</span>
+            </label>
+            <input type="number" id="barometricPressure" step="0.1" min="900" max="1100" placeholder="e.g. 1013" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Submit ── -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">
+          📤 डेटा सबमिट करें / Submit Data
+        </button>
+        <div class="form-actions">
+          <button type="button" class="secondary-btn" id="clearBtn">
+            🗑️ फ़ॉर्म साफ़ करें / Clear Form
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ═══ History Modal ═══ -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📋 इतिहास / History</h2>
+        <button class="modal-close" onclick="closeHistory()">✕</button>
+      </div>
+      <div class="modal-body" id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ═══ Toast Container ═══ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ═══ Scripts (order matters) ═══ -->
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
